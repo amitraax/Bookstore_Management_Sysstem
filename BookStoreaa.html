@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Bookstore Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://kit.fontawesome.com/a076d05399.js"></script> <!-- For icons -->
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .bg-book-pattern {
+            background-image: url('https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/6558273d-1bab-4c4e-8943-11d82d1d2275.png');
+            background-size: cover;
+            background-position: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        .glow-button {
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            transition: box-shadow 0.3s ease;
+        }
+        .glow-button:hover {
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+        }
+        .cart-item {
+            transition: transform 0.2s ease;
+        }
+        .cart-item:hover {
+            transform: scale(1.05);
+        }
+        video {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+        }
+        iframe {
+            width: 100%;
+            max-width: 600px;
+            height: 315px;
+        }
+        .image-placeholder {
+            object-fit: cover;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body class="relative">
+    <div class="bg-book-pattern"></div>
+    <header class="bg-white shadow-lg py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-blue-600">Pustak Mahal</h1>
+            <div class="flex items-center space-x-4">
+                <input type="text" id="search-bar" placeholder="Search books by title or author..." class="px-4 py-2 border rounded-lg w-64" />
+                <button id="search-btn" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Search</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Book List Section -->
+            <div class="lg:col-span-3">
+                <h2 class="text-2xl font-semibold mb-4 text-white">Book Catalog</h2>
+                <div class="flex justify-between items-center mb-4">
+                    <select id="filter-category" class="px-4 py-2 border rounded-lg">
+                        <option value="all">All Categories</option>
+                        <option value="coding">Coding</option>
+                        <option value="fiction">Fiction</option>
+                        <option value="biography">Biography</option>
+                        <option value="history">Indian History</option>
+                    </select>
+                    <button id="add-book-btn" class="bg-green-500 text-white px-4 py-2 rounded-lg glow-button">Add New Book</button>
+                </div>
+                <div id="book-list" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <!-- Books will be dynamically added here -->
+                </div>
+            </div>
+
+            <!-- Cart Section -->
+            <div class="lg:col-span-1">
+                <h2 class="text-2xl font-semibold mb-4 text-white">Shopping Cart</h2>
+                <div id="cart" class="bg-white rounded-lg p-4 shadow-lg">
+                    <div id="cart-items"></div>
+                    <div id="cart-total" class="mt-4 text-xl font-bold">Total: ₹0</div>
+                    <button id="clear-cart" class="bg-red-500 text-white px-4 py-2 rounded-lg mt-4">Clear Cart</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3D Video Ads and YouTube Section -->
+        <section class="mt-12">
+            <h2 class="text-3xl font-bold text-center text-white mb-8">Featured Videos: Coding Book Tutorials</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg p-4 shadow-lg">
+                    <h3 class="text-xl font-semibold mb-4">3D Interactive Coding Book Demo</h3>
+                    
+          <video width="640" height="360" controls>
+  <source src="mybookad.mp4" type="video/mp4">
+</video>
+
+
+                    <p class="mt-2 text-gray-600">Experience a 3D simulation of coding books in action. This free video is available for offline and online viewing.</p>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow-lg">
+                    <h3 class="text-xl font-semibold mb-4">YouTube Coding Book Review</h3>
+                    <iframe width="560" height="315" 
+src="https://www.youtube.com/embed/edMoAGuJ10I" 
+title="YouTube video player" 
+frameborder="0" 
+allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+allowfullscreen>
+</iframe>
+
+                    <p class="mt-2 text-gray-600">Watch this YouTube video showcasing the best Indian-authored coding books. Free to view online and accessible offline after download.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Add Book Modal -->
+        <div id="add-book-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+            <div class="bg-white rounded-lg p-6 w-96">
+                <h3 class="text-xl font-bold mb-4">Add New Book</h3>
+                <input type="text" id="book-title" placeholder="Title" class="w-full px-3 py-2 border rounded mb-2" />
+                <input type="text" id="book-author" placeholder="Author (e.g., Rabindranath Tagore)" class="w-full px-3 py-2 border rounded mb-2" />
+                <input type="number" id="book-price" placeholder="Price (INR, e.g., 500)" class="w-full px-3 py-2 border rounded mb-2" />
+                <input type="text" id="book-category" placeholder="Category (e.g., Coding)" class="w-full px-3 py-2 border rounded mb-2" />
+                <input type="url" id="book-image" placeholder="Image URL (use https://placehold.co/...)" class="w-full px-3 py-2 border rounded mb-2" />
+                <button id="save-book" class="bg-blue-500 text-white px-4 py-2 rounded mr-2">Save</button>
+                <button id="cancel-add" class="bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Update Book Modal -->
+        <div id="update-book-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+            <div class="bg-white rounded-lg p-6 w-96">
+                <h3 class="text-xl font-bold mb-4">Update Book</h3>
+                <input type="text" id="update-title" class="w-full px-3 py-2 border rounded mb-2" />
+                <input type="text" id="update-author" class="w-full px-3 py-2 border rounded mb-2" />
+                <input type="number" id="update-price" class="w-full px-3 py-2 border rounded mb-2" />
+                <input type="text" id="update-category" class="w-full px-3 py-2 border rounded mb-2" />
+                <input type="url" id="update-image" class="w-full px-3 py-2 border rounded mb-2" />
+                <button id="update-save" class="bg-blue-500 text-white px-4 py-2 rounded mr-2">Update</button>
+                <button id="cancel-update" class="bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <h3 class="text-xl font-bold mb-4">Contact Information </h3>
+            <p><i class="fas fa-map-marker-alt mr-2"></i>Address: Dev Bhoomi Uttarakhand University, Dehradun</p>
+            <p><i class="fas fa-phone mr-2"></i>Phone: +91-9568700353</p>
+            <p><i class="fas fa-envelope mr-2"></i>Email:chauchananshikha7@gmail.com</p>
+            
+        </div>
+    </footer>
+
+    <script>
+        // Sample data with Indian authors and INR prices
+        let books = JSON.parse(localStorage.getItem('books')) || [
+            {
+                id: 1,
+                title: "Let Us C",
+                author: "Yashwant Kanetkar",
+                price: 450,
+                category: "Coding",
+                image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/42103c0f-2684-4551-aa1a-37dbc334ca1b.png"
+            },
+            {
+                id: 2,
+                title: "The Guide",
+                author: "R.K. Narayan",
+                price: 320,
+                category: "Fiction",
+                image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/399753c0-4726-4f21-8943-aa7eca07462b.png"
+            },
+            {
+                id: 3,
+                title: "Wings of Fire",
+                author: "A.P.J. Abdul Kalam",
+                price: 550,
+                category: "Biography",
+                image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/80520364-3f45-4ac2-8bd4-4be89d7be483.png"
+            },
+            {
+                id: 4,
+                title: "The Discovery of India",
+                author: "Jawaharlal Nehru",
+                price: 600,
+                category: "Indian History",
+                image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/75e97c5f-f0f3-48d2-a7a1-496b90865592.png"
+            }
+        ];
+
+        let cart = [];
+        let currentBookId = null;
+
+        // Render book list
+        function renderBooks(booksToRender = books) {
+            const bookList = document.getElementById('book-list');
+            bookList.innerHTML = '';
+            booksToRender.forEach(book => {
+                const bookCard = document.createElement('div');
+                bookCard.className = 'bg-white rounded-lg shadow-lg overflow-hidden';
+                bookCard.innerHTML = `
+                    <img src="${book.image}" alt="Cover image of '${book.title}' by Indian author ${book.author}, priced at ${book.price} INR, in ${book.category} category" class="w-full h-48 object-cover image-placeholder" onerror="this.src='https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/d6b7dd9c-a4e5-499b-a8e2-1c071aa24331.png'" />
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold">${book.title}</h3>
+                        <p class="text-gray-600">By: ${book.author}</p>
+                        <p class="text-gray-600">Category: ${book.category}</p>
+                        <p class="text-xl font-bold text-green-600">₹${book.price}</p>
+                        <div class="mt-4 flex space-x-2">
+                            <button class="bg-blue-500 text-white px-3 py-1 text-sm rounded update-btn" data-id="${book.id}">Update</button>
+                            <button class="bg-red-500 text-white px-3 py-1 text-sm rounded delete-btn" data-id="${book.id}">Delete</button>
+                            <button class="bg-green-500 text-white px-3 py-1 text-sm rounded add-to-cart-btn" data-id="${book.id}">Add to Cart</button>
+                        </div>
+                    </div>
+                `;
+                bookList.appendChild(bookCard);
+            });
+            updateLocalStorage();
+        }
+
+        // Update localStorage
+        function updateLocalStorage() {
+            localStorage.setItem('books', JSON.stringify(books));
+        }
+
+        // Render cart
+        function renderCart() {
+            const cartItems = document.getElementById('cart-items');
+            const cartTotal = document.getElementById('cart-total');
+            cartItems.innerHTML = '';
+            let total = 0;
+            cart.forEach(item => {
+                total += item.price * item.quantity;
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'flex justify-between items-center mb-2 cart-item';
+                itemDiv.innerHTML = `
+                    <div>
+                        <p class="text-sm">${item.title}</p>
+                        <p class="text-xs text-gray-600">₹${item.price} x ${item.quantity}</p>
+                    </div>
+                    <button class="bg-red-500 text-white px-2 py-1 text-xs rounded remove-from-cart" data-id="${item.id}">Remove</button>
+                `;
+                cartItems.appendChild(itemDiv);
+            });
+            cartTotal.textContent = `Total: ₹${total}`;
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        // Event listeners
+        document.getElementById('add-book-btn').addEventListener('click', () => {
+            document.getElementById('add-book-modal').classList.remove('hidden');
+            document.getElementById('add-book-modal').style.display = 'flex';
+        });
+
+        document.getElementById('cancel-add').addEventListener('click', () => {
+            document.getElementById('add-book-modal').classList.add('hidden');
+        });
+
+        document.getElementById('save-book').addEventListener('click', () => {
+            const title = document.getElementById('book-title').value;
+            const author = document.getElementById('book-author').value;
+            const price = parseInt(document.getElementById('book-price').value);
+            const category = document.getElementById('book-category').value;
+            const image = document.getElementById('book-image').value || 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/fd34992f-1918-4def-8dac-ba24b530729c.png';
+            if (title && author && price) {
+                books.push({
+                    id: Date.now(),
+                    title,
+                    author,
+                    price,
+                    category,
+                    image
+                });
+                renderBooks();
+                document.getElementById('add-book-modal').classList.add('hidden');
+                // Reset form
+                document.getElementById('book-title').value = '';
+                document.getElementById('book-author').value = '';
+                document.getElementById('book-price').value = '';
+                document.getElementById('book-category').value = '';
+                document.getElementById('book-image').value = '';
+            }
+        });
+
+        document.getElementById('search-btn').addEventListener('click', () => {
+            const query = document.getElementById('search-bar').value.toLowerCase();
+            const filteredBooks = books.filter(book =>
+                book.title.toLowerCase().includes(query) || book.author.toLowerCase().includes(query)
+            );
+            renderBooks(filteredBooks);
+        });
+
+        document.getElementById('filter-category').addEventListener('change', () => {
+            const category = document.getElementById('filter-category').value;
+            const filteredBooks = category === 'all' ? books : books.filter(book => book.category === category);
+            renderBooks(filteredBooks);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('update-btn')) {
+                const id = parseInt(e.target.getAttribute('data-id'));
+                const book = books.find(b => b.id === id);
+                if (book) {
+                    currentBookId = id;
+                    document.getElementById('update-title').value = book.title;
+                    document.getElementById('update-author').value = book.author;
+                    document.getElementById('update-price').value = book.price;
+                    document.getElementById('update-category').value = book.category;
+                    document.getElementById('update-image').value = book.image;
+                    document.getElementById('update-book-modal').classList.remove('hidden');
+                    document.getElementById('update-book-modal').style.display = 'flex';
+                }
+            }
+
+            if (e.target.classList.contains('delete-btn')) {
+                const id = parseInt(e.target.getAttribute('data-id'));
+                books = books.filter(b => b.id !== id);
+                renderBooks();
+                // Remove from cart if present
+                cart = cart.filter(item => item.id !== id);
+                renderCart();
+            }
+
+            if (e.target.classList.contains('add-to-cart-btn')) {
+                const id = parseInt(e.target.getAttribute('data-id'));
+                const book = books.find(b => b.id === id);
+                if (book) {
+                    const existingItem = cart.find(item => item.id === id);
+                    if (existingItem) {
+                        existingItem.quantity += 1;
+                    } else {
+                        cart.push({ ...book, quantity: 1 });
+                    }
+                    renderCart();
+                }
+            }
+
+            if (e.target.classList.contains('remove-from-cart')) {
+                const id = parseInt(e.target.getAttribute('data-id'));
+                cart = cart.filter(item => item.id !== id);
+                renderCart();
+            }
+        });
+
+        document.getElementById('update-save').addEventListener('click', () => {
+            const title = document.getElementById('update-title').value;
+            const author = document.getElementById('update-author').value;
+            const price = parseInt(document.getElementById('update-price').value);
+            const category = document.getElementById('update-category').value;
+            const image = document.getElementById('update-image').value;
+            if (title && author && price && currentBookId) {
+                const book = books.find(b => b.id === currentBookId);
+                if (book) {
+                    book.title = title;
+                    book.author = author;
+                    book.price = price;
+                    book.category = category;
+                    book.image = image;
+                    renderBooks();
+                    document.getElementById('update-book-modal').classList.add('hidden');
+                }
+            }
+        });
+
+        document.getElementById('cancel-update').addEventListener('click', () => {
+            document.getElementById('update-book-modal').classList.add('hidden');
+        });
+
+        document.getElementById('clear-cart').addEventListener('click', () => {
+            cart = [];
+            renderCart();
+        });
+
+        // Load cart from localStorage on page load
+        if (localStorage.getItem('cart')) {
+            cart = JSON.parse(localStorage.getItem('cart'));
+            renderCart();
+        }
+
+        // Initial render
+        renderBooks();
+    </script>
+</body>
+</html>
+</content>
+</create_file>
